@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HNReader.iml" filepath="$PROJECT_DIR$/.idea/modules/HNReader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/HNReader.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/HNReader.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/HNReader.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/HNReader.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/HNReader.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/HNReader.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/HNReader.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/HNReader.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>
