@@ -21,14 +21,13 @@ import retrofit2.Response
  * @see [StoriesViewModel]
  * @see [HNRestApi]
  */
-class HackerNewsRepository(context: Context) {
+class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
     companion object {
         private const val CACHE_DURATION = 60 * 60 * 1000 // 1 hour
         private const val TAG = "HackerNewsRepository"
     }
 
     private val webApi: HNRestApi = HNRestApi()
-    private val hackerNewsDataBase: HackerNewsDatabase = HackerNewsDatabase.getDatabase(context)
     private val hackerNewsItemDao: HackerNewsItemDao = hackerNewsDataBase.storyDao()
 
     val isNewLoading: MutableLiveData<Boolean> = MutableLiveData()

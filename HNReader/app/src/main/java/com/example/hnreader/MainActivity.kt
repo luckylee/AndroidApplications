@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.hnreader.data.HackerNewsDatabase
 import com.example.hnreader.data.HackerNewsRepository
 import com.example.hnreader.databinding.ActivityMainBinding
 import com.example.hnreader.ui.NewStoriesFragment
@@ -98,8 +99,9 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG).show()
             finish()
         } else {
-
-            val hnNewsRepo = HackerNewsRepository(this)
+            // Init Database, Repository and ViewModel
+            val hackerNewsDataBase: HackerNewsDatabase = HackerNewsDatabase.getDatabase(this)
+            val hnNewsRepo = HackerNewsRepository(hackerNewsDataBase)
 
             hnNewsRepo.fetchNewStoryIDs()
             // Use the 'by viewModels()' Kotlin property delegate

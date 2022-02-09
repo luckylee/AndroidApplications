@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hnreader.R
+import com.example.hnreader.data.HackerNewsDatabase
 import com.example.hnreader.data.HackerNewsItem
 import com.example.hnreader.data.HackerNewsRepository
 import com.example.hnreader.databinding.ItemStoriesListBinding
@@ -36,7 +37,8 @@ private val recyclerClickListener: RecyclerViewClickListener<HackerNewsItem>
     }
 
     private var stories = emptyList<HackerNewsItem>()
-    private val hackerNewsRepository: HackerNewsRepository = HackerNewsRepository(context)
+    private val database : HackerNewsDatabase = HackerNewsDatabase.getDatabase(context)
+    private val hackerNewsRepository: HackerNewsRepository = HackerNewsRepository(database)
     private var alreadyRequestedItem: MutableList<Int> = mutableListOf()
 
     override fun onCreateViewHolder(
