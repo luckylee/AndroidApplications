@@ -1,0 +1,28 @@
+It is the Android prototype application to get the HackerNews (https://news.ycombinator.com/)
+stories via exposed public API, which is documented here: https://github.com/HackerNews/API
+
+[Requirements and Features]
+Currently, it provide the below features
+● Reads news stories from the HackerNews API
+● Presents these stories in descending date order to the user
+● Allows the user to view the most highly ranked articles
+● Allows the user to launch the link associated with the article in their browser
+
+[Design concept and architecture]
+This prototype application implements MVC architecture using the following technical stacks.
+Kotlin, Coroutines. View-Model design
+UI: Fragment, ViewPager2, RecyclerView, and WebView
+Data: Room related service
+Network: Retrofit related service
+
+[Clarification]
+ Allows the user to view the most highly ranked articles
+ - Now query the Top stories list for this.
+ - Or the requirement means to get the new stories and are ranked by 'score'?
+
+[TODO]
+- Time out mechanism for long time data loading.
+- Error handle for fetch data failure
+- Test for HackerNewRepository
+- Try to use Retrofit coroutine after Retrofit 2.6
+- Espresso Test to validate UI ?
