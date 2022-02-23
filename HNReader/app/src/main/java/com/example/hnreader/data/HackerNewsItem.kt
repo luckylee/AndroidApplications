@@ -9,7 +9,7 @@ import java.util.*
 
 @Entity(tableName = TABLE_NAME)
 /** The HackerNewsItem for Dao  */
-class HackerNewsItem(
+data class HackerNewsItem(
 
     @PrimaryKey @ColumnInfo(name = HACKER_NEWS_ITEM_ID)
     var id: Int,

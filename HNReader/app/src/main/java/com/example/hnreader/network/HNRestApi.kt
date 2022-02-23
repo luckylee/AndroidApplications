@@ -17,7 +17,7 @@ import retrofit2.http.Query
 import java.util.*
 
 /** HackerNews Web API */
-class HNRestApi {
+object HNRestApi {
 
     private val hackerNewsApi: HackerNewsApi
     private val baseUrl = "https://hacker-news.firebaseio.com/v0/"

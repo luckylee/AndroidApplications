@@ -1,10 +1,10 @@
 package com.example.hnreader.data
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.hnreader.network.HNRestApi
+import com.example.hnreader.ui.StoriesViewModel
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,7 +16,7 @@ import retrofit2.Response
  * The repository will fetch the hacker news via Web API in background task and then insert/update
  * to database. ViewModel will get the  hacker news live data from Room and observe their status.
  *
- * @param Context   The context for Database or Web API creation
+ * @param hackerNewsDataBase  The context for Database or Web API creation
  *
  * @see [StoriesViewModel]
  * @see [HNRestApi]
@@ -27,7 +27,7 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
         private const val TAG = "HackerNewsRepository"
     }
 
-    private val webApi: HNRestApi = HNRestApi()
+    //private val webApi: HNRestApi = HNRestApi()
     private val hackerNewsItemDao: HackerNewsItemDao = hackerNewsDataBase.storyDao()
 
     val isNewLoading: MutableLiveData<Boolean> = MutableLiveData()
@@ -59,7 +59,7 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
     }
 
     fun fetchNewStoryIDs()  {
-        val call: Call<List<Int>> = webApi.getNewStories()
+        val call: Call<List<Int>> = HNRestApi.getNewStories()
 
         isNewLoading.value = true
         call.enqueue(object : Callback<List<Int>> {
@@ -92,7 +92,7 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
     }
 
     fun fetchTopStoryIDs()  {
-        val call: Call<List<Int>> = webApi.getTopStories()
+        val call: Call<List<Int>> = HNRestApi.getTopStories()
 
         isTopLoading.value = true
         call.enqueue(object : Callback<List<Int>> {
@@ -124,15 +124,15 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
         })
     }
 
-    suspend fun insertStories(storyIds: List<Int>) : Boolean {
+    fun insertStories(storyIds: List<Int>) : Boolean {
         storyIds.forEach {
             hackerNewsItemDao.insert(HackerNewsItem(it, "story", null))
         }
-        return true;
+        return true
     }
 
     fun fetchStoryDetail(storyId: Int) {
-        val call: Call<HackerNewsItem> = webApi.getStoryDetail(storyId)
+        val call: Call<HackerNewsItem> = HNRestApi.getStoryDetail(storyId)
 
         call.enqueue(object : Callback<HackerNewsItem> {
             override fun onFailure(call: Call<HackerNewsItem>, t: Throwable) {
@@ -154,7 +154,7 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
 
     }
 
-    suspend fun insertStoryDetail(item: HackerNewsItem) : Boolean {
+    fun insertStoryDetail(item: HackerNewsItem) : Boolean {
         item.kidCount = item.kids?.size
         Log.d(TAG, "Item id: ${item.id}, title: ${item.title}, url: ${item.url}")
         hackerNewsItemDao.update(item)
