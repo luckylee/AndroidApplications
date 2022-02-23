@@ -41,7 +41,7 @@ class TopStoriesFragment : Fragment(), RecyclerViewClickListener<HackerNewsItem>
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = StoryItemAdapter(requireContext(), this)
+        adapter = StoryItemAdapter(requireContext(), storyModel, this)
         binding.topStoriesList.layoutManager = LinearLayoutManager(context)
         binding.topStoriesList.adapter = adapter
 

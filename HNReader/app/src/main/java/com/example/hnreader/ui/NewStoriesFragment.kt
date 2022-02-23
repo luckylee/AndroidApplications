@@ -41,7 +41,7 @@ class NewStoriesFragment : Fragment(), RecyclerViewClickListener<HackerNewsItem>
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = StoryItemAdapter(requireContext(), this)
+        adapter = StoryItemAdapter(requireContext(), storyModel, this)
         binding.newStoriesList.layoutManager = LinearLayoutManager(context)
         binding.newStoriesList.adapter = adapter
 

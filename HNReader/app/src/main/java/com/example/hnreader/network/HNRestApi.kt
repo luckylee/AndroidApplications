@@ -48,7 +48,7 @@ object HNRestApi {
         return hackerNewsApi.getNewStories("pretty")
     }
 
-    fun getStoryDetail(storyId: Int): Call<HackerNewsItem> {
+    suspend fun getStoryDetail(storyId: Int): HackerNewsItem {
         return hackerNewsApi.getStoryDetail(storyId, "pretty")
     }
 
@@ -60,9 +60,6 @@ object HNRestApi {
         @GET("newstories.json")
         fun getNewStories(@Query("print") printParam: String): Call<List<Int>>
 
-        @GET("item/{item_id}.json")
-        fun getStoryDetail(@Path("item_id") itemId: Int, @Query("print") printParam: String): Call<HackerNewsItem>
-
         // TODO() Change to use Retrofit Coroutine
         /*
         @GET("topstories.json")
@@ -70,9 +67,9 @@ object HNRestApi {
 
         @GET("newstories.json")
         suspend fun getNewStories(@Query("print") printParam: String): List<Int>
-
+*/
         @GET("item/{item_id}.json")
         suspend fun getStoryDetail(@Path("item_id") itemId: Int, @Query("print") printParam: String): HackerNewsItem
-         */
+
     }
 }

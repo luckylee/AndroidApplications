@@ -29,6 +29,7 @@ import com.example.hnreader.utils.CommonUtils
  */
 class StoryItemAdapter (
 private val context: Context,
+private val viewModel: StoriesViewModel,
 private val recyclerClickListener: RecyclerViewClickListener<HackerNewsItem>
 ) : RecyclerView.Adapter<StoryItemAdapter.StoryItemViewHolder>() {
 
@@ -37,8 +38,6 @@ private val recyclerClickListener: RecyclerViewClickListener<HackerNewsItem>
     }
 
     private var stories = emptyList<HackerNewsItem>()
-    private val database : HackerNewsDatabase = HackerNewsDatabase.getDatabase(context)
-    private val hackerNewsRepository: HackerNewsRepository = HackerNewsRepository(database)
     private var alreadyRequestedItem: MutableList<Int> = mutableListOf()
 
     override fun onCreateViewHolder(
@@ -84,7 +83,7 @@ private val recyclerClickListener: RecyclerViewClickListener<HackerNewsItem>
             setViewVisibilities(holder.binding, false)
 
         } else if (!alreadyRequestedItem.contains(story.id)) {
-            hackerNewsRepository.fetchStoryDetail(story.id)
+            viewModel.getStoryItem(story.id)
 
             alreadyRequestedItem.add(story.id)
 

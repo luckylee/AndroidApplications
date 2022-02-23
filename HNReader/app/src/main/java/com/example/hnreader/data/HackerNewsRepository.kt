@@ -131,28 +131,7 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
         return true
     }
 
-    fun fetchStoryDetail(storyId: Int) {
-        val call: Call<HackerNewsItem> = HNRestApi.getStoryDetail(storyId)
-
-        call.enqueue(object : Callback<HackerNewsItem> {
-            override fun onFailure(call: Call<HackerNewsItem>, t: Throwable) {
-                Log.e(TAG, "get item id $storyId Call Failed: $t")
-            }
-
-            override fun onResponse(call: Call<HackerNewsItem>, response: Response<HackerNewsItem>)
-            {
-                if (response.isSuccessful) {
-                    val result: Deferred<Boolean> = GlobalScope.async(Dispatchers.IO) {
-                        insertStoryDetail(response.body()!!)
-                    }
-
-                } else {
-                    Log.e(TAG, "Call Failed: " + response.errorBody()?.string())
-                }
-            }
-        })
-
-    }
+    suspend fun fetchStoryDetail(storyId: Int) = HNRestApi.getStoryDetail(storyId)
 
     fun insertStoryDetail(item: HackerNewsItem) : Boolean {
         item.kidCount = item.kids?.size
