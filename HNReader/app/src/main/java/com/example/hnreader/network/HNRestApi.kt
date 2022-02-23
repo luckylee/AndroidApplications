@@ -1,14 +1,12 @@
 package com.example.hnreader.network
 
+
 import com.example.hnreader.data.HackerNewsItem
 import com.example.hnreader.utils.DateTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-
-
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -17,7 +15,7 @@ import retrofit2.http.Query
 import java.util.*
 
 /** HackerNews Web API */
-object HNRestApi {
+class HNRestApi {
 
     private val hackerNewsApi: HackerNewsApi
     private val baseUrl = "https://hacker-news.firebaseio.com/v0/"
@@ -40,11 +38,11 @@ object HNRestApi {
         hackerNewsApi = retrofit.create(HackerNewsApi::class.java)
     }
 
-    fun getTopStories(): Call<List<Int>> {
+    suspend fun getTopStories(): List<Int> {
         return hackerNewsApi.getTopStories("pretty")
     }
 
-    fun getNewStories(): Call<List<Int>> {
+    suspend fun getNewStories(): List<Int> {
         return hackerNewsApi.getNewStories("pretty")
     }
 
@@ -53,21 +51,15 @@ object HNRestApi {
     }
 
     interface HackerNewsApi {
-        // Before Retrofit 2.6, we still use Callback to get data in REST Api
-        @GET("topstories.json")
-        fun getTopStories(@Query("print") printParam: String): Call<List<Int>>
+        // Before Retrofit 2.6, use Callback to get data in REST Api, now change to use
+        // Coroutine suspend
 
-        @GET("newstories.json")
-        fun getNewStories(@Query("print") printParam: String): Call<List<Int>>
-
-        // TODO() Change to use Retrofit Coroutine
-        /*
         @GET("topstories.json")
         suspend fun getTopStories(@Query("print") printParam: String): List<Int>
 
         @GET("newstories.json")
         suspend fun getNewStories(@Query("print") printParam: String): List<Int>
-*/
+
         @GET("item/{item_id}.json")
         suspend fun getStoryDetail(@Path("item_id") itemId: Int, @Query("print") printParam: String): HackerNewsItem
 

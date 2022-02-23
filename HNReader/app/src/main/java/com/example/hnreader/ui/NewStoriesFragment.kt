@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hnreader.R
 import com.example.hnreader.data.HackerNewsItem
@@ -33,7 +32,7 @@ class NewStoriesFragment : Fragment(), RecyclerViewClickListener<HackerNewsItem>
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_newstories, container, false)
         return binding.root
     }
@@ -44,10 +43,6 @@ class NewStoriesFragment : Fragment(), RecyclerViewClickListener<HackerNewsItem>
         adapter = StoryItemAdapter(requireContext(), storyModel, this)
         binding.newStoriesList.layoutManager = LinearLayoutManager(context)
         binding.newStoriesList.adapter = adapter
-
-        storyModel.isNewStoriesLoading().observe(viewLifecycleOwner,
-            Observer<Boolean> { isLoading -> binding.swipeToRefresh.isRefreshing = isLoading!! }
-        )
 
         storyModel.getNewStories().observe(viewLifecycleOwner
         ) { stories ->
@@ -62,20 +57,23 @@ class NewStoriesFragment : Fragment(), RecyclerViewClickListener<HackerNewsItem>
 
         binding.swipeToRefresh.setOnRefreshListener {
             storyModel.fetchNewStories()
+            // TODO() the isLoading is the variable, and have the new
+            storyModel.isNewStoriesLoading().observe(viewLifecycleOwner
+            ) { isLoading -> binding.swipeToRefresh.isRefreshing = isLoading!! }
         }
     }
 
 
-    override fun onItemClick(item: HackerNewsItem) {
+    override fun onItemClick(obj: HackerNewsItem) {
         val intent: Intent
-        if (TextUtils.isEmpty(item.url)) {
+        if (TextUtils.isEmpty(obj.url)) {
             // pop toast for no url error
             Toast.makeText(requireContext(), "No URL for the story to check detail!",
                 Toast.LENGTH_SHORT).show()
 
         } else {
             intent = Intent(this.context, WebViewActivity::class.java)
-            intent.putExtra(WebViewActivity.EXTRA_URL, item.url)
+            intent.putExtra(WebViewActivity.EXTRA_URL, obj.url)
             startActivity(intent)
         }
     }

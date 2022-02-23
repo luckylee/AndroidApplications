@@ -1,10 +1,9 @@
 package com.example.hnreader.ui
 
+import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.example.hnreader.MainActivity
 import com.example.hnreader.data.HackerNewsItem
 import com.example.hnreader.data.HackerNewsRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,12 +18,16 @@ class StoriesViewModel(private val repository: HackerNewsRepository) : ViewModel
         private const val TAG = "StoriesViewModel"
     }
 
+    private var isNewLoading: MutableLiveData<Boolean> = MutableLiveData()
+    private var isTopLoading: MutableLiveData<Boolean> = MutableLiveData()
+
+
     fun isNewStoriesLoading() : LiveData<Boolean>{
-        return  repository.isNewLoading
+        return  isNewLoading
     }
 
     fun isTopStoriesLoading() : LiveData<Boolean>{
-        return  repository.isTopLoading
+        return  isTopLoading
     }
 
     fun getAllStories() : LiveData<List<HackerNewsItem>> {
@@ -61,12 +64,24 @@ class StoriesViewModel(private val repository: HackerNewsRepository) : ViewModel
         return repository.getItemDetail(id)
     }
 
-    fun fetchNewStories() {
-        return repository.fetchNewStoryIDs()
+    fun fetchNewStories()  {
+        // TODO() Refactor update flow for isNewLoading and isTopLoading
+        isNewLoading = liveData(Dispatchers.IO) {
+            repository.fetchNewStoryIDs()
+            emit(false)
+        } as MutableLiveData<Boolean>
+
+        isNewLoading.value = true
     }
 
     fun fetchTopStories() {
-        return repository.fetchTopStoryIDs()
+        // TODO() Refactor update flow for isNewLoading and isTopLoading
+        isTopLoading = liveData(Dispatchers.IO) {
+            repository.fetchTopStoryIDs()
+            emit(false)
+        } as MutableLiveData<Boolean>
+
+        isTopLoading.value = true
     }
 }
 

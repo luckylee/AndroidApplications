@@ -2,13 +2,10 @@ package com.example.hnreader.data
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.hnreader.network.HNRestApi
 import com.example.hnreader.ui.StoriesViewModel
-import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import retrofit2.HttpException
+import java.io.IOException
 
 /**
  * The main hacker news items data getter and management
@@ -27,20 +24,13 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
         private const val TAG = "HackerNewsRepository"
     }
 
-    //private val webApi: HNRestApi = HNRestApi()
     private val hackerNewsItemDao: HackerNewsItemDao = hackerNewsDataBase.storyDao()
-
-    val isNewLoading: MutableLiveData<Boolean> = MutableLiveData()
-    val isTopLoading: MutableLiveData<Boolean> = MutableLiveData()
 
     private lateinit var newstoryIds : List<Int>
     private lateinit var topstoryIds : List<Int>
 
-    init {
-        isNewLoading.value = false
-        isTopLoading.value = false
+    private val webApi: HNRestApi = HNRestApi()
 
-    }
 
     fun getItemDetail(itemId: Int): LiveData<HackerNewsItem> {
         return hackerNewsItemDao.getItemDetail(itemId)
@@ -58,80 +48,53 @@ class HackerNewsRepository(hackerNewsDataBase: HackerNewsDatabase) {
         return hackerNewsItemDao.getStories(newstoryIds)
     }
 
-    fun fetchNewStoryIDs()  {
-        val call: Call<List<Int>> = HNRestApi.getNewStories()
+    suspend fun fetchNewStoryIDs() : List<Int> {
 
-        isNewLoading.value = true
-        call.enqueue(object : Callback<List<Int>> {
+        try {
+            newstoryIds = webApi.getNewStories()
+            Log.d(TAG, "Get new stories size: ${newstoryIds.size}")
+            Log.d(TAG, "Get new stories IDs: $newstoryIds")
+            insertStories(newstoryIds)
+        } catch (e: HttpException) {
+            //handles exception with the request
+            Log.e(TAG, "request error: " + e.message)
+        } catch (e: IOException) {
+            //handles no internet exception
+            Log.e(TAG, "internet error: " + e.message)
+        }
 
-            override fun onFailure(call: Call<List<Int>>, t: Throwable) {
-                Log.e(TAG, "Call Failed: $t")
-                isNewLoading.value = false
-            }
-
-            override fun onResponse(call: Call<List<Int>>, response: Response<List<Int>>)
-                    = runBlocking<Unit> {
-                if (response.isSuccessful) {
-                    newstoryIds = response.body()!!
-
-                    // Log.d(TAG, "Get new stories size: ${newstoryIds.size}")
-                    // Log.d(TAG, "Get new stories IDs: $newstoryIds")
-
-                    val result: Deferred<Boolean> = GlobalScope.async(Dispatchers.IO) {
-                        insertStories(response.body()!!)
-                    }
-
-                    result.await()
-                } else {
-                    Log.e(TAG, "Call Failed: " + response.errorBody()?.string())
-                }
-                // After all story Ids are inserted into db, we 
-                isNewLoading.value = false
-            }
-        })
+        //isNewLoading.value = false
+        return newstoryIds
     }
 
-    fun fetchTopStoryIDs()  {
-        val call: Call<List<Int>> = HNRestApi.getTopStories()
+    suspend fun fetchTopStoryIDs() : List<Int> {
 
-        isTopLoading.value = true
-        call.enqueue(object : Callback<List<Int>> {
+        try {
+            topstoryIds = webApi.getTopStories()
+            Log.d(TAG, "Get top stories size: ${topstoryIds.size}")
+            Log.d(TAG, "Get top stories IDs: $topstoryIds")
 
-            override fun onFailure(call: Call<List<Int>>, t: Throwable) {
-                Log.e(TAG, "Call Failed: $t")
-                isTopLoading.value = false
-            }
+            insertStories(topstoryIds)
+        } catch (e: HttpException) {
+            //handles exception with the request
+            Log.e(TAG, "request error: " + e.message)
+        } catch (e: IOException) {
+            //handles no internet exception
+            Log.e(TAG, "internet error: " + e.message)
+        }
 
-            override fun onResponse(call: Call<List<Int>>, response: Response<List<Int>>)
-                    = runBlocking<Unit> {
-                if (response.isSuccessful) {
-                    topstoryIds = response.body()!!
-
-                    // Log.d(TAG, "Get new stories size: ${newstoryIds.size}")
-                    // Log.d(TAG, "Get new stories IDs: $newstoryIds")
-
-                    val result: Deferred<Boolean> = GlobalScope.async(Dispatchers.IO) {
-                        insertStories(response.body()!!)
-                    }
-
-                    result.await()
-                } else {
-                    Log.e(TAG, "Call Failed: " + response.errorBody()?.string())
-                }
-                // After all story Ids are inserted into db, we
-                isTopLoading.value = false
-            }
-        })
+        return topstoryIds
     }
 
-    fun insertStories(storyIds: List<Int>) : Boolean {
+    suspend fun fetchStoryDetail(storyId: Int) = webApi.getStoryDetail(storyId)
+
+
+    private fun insertStories(storyIds: List<Int>) : Boolean {
         storyIds.forEach {
             hackerNewsItemDao.insert(HackerNewsItem(it, "story", null))
         }
         return true
     }
-
-    suspend fun fetchStoryDetail(storyId: Int) = HNRestApi.getStoryDetail(storyId)
 
     fun insertStoryDetail(item: HackerNewsItem) : Boolean {
         item.kidCount = item.kids?.size

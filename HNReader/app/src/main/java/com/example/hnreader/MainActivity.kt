@@ -103,23 +103,33 @@ class MainActivity : AppCompatActivity() {
             val hackerNewsDataBase: HackerNewsDatabase = HackerNewsDatabase.getDatabase(this)
             val hnNewsRepo = HackerNewsRepository(hackerNewsDataBase)
 
-            hnNewsRepo.fetchNewStoryIDs()
             // Use the 'by viewModels()' Kotlin property delegate
             // from the activity-ktx artifact
             val model: StoriesViewModel by viewModels() {
                 StoriesViewModelFactory(hnNewsRepo)
             }
 
-            model.isNewStoriesLoading().observe(this, Observer { loading ->
+            model.fetchTopStories()
+            model.isTopStoriesLoading().observe(this) { loading ->
                 // Complete the 1st time data loading, launch the List UI
                 if (!loading) {
                     // Pre-load top stories list.
-                    model.fetchTopStories()
                     binding.viewPager2.adapter = ViewPager2Adapter(this@MainActivity)
                     attachViewPagerAndTab()
                 }
-                model.isNewStoriesLoading().removeObserver(Observer { })
-            })
+                model.isTopStoriesLoading().removeObserver { }
+            }
+
+            // TODO() Figure out why we must add observer the fetchNewStories or fetTopStories
+            //  workable
+            model.fetchNewStories()
+            model.isNewStoriesLoading().observe(this) { loading ->
+                if (!loading) {
+                    Log.d(TAG, "New Story Ids fetching complete!!!")
+                }
+                model.isNewStoriesLoading().removeObserver { }
+            }
+
         }
     }
 
@@ -132,8 +142,8 @@ class MainActivity : AppCompatActivity() {
     private fun attachViewPagerAndTab() {
         TabLayoutMediator(binding.tabLayout, binding.viewPager2) { tab, position ->
             when(position) {
-                0 -> tab.text = getString(R.string.title_new)
-                1 -> tab.text = getString(R.string.title_top)
+                0 -> tab.text = getString(R.string.title_top)
+                1 -> tab.text = getString(R.string.title_new)
                 else -> throw IllegalArgumentException()
             }
         }.attach()
@@ -147,8 +157,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun createFragment(position: Int): Fragment = when (position) {
-            0 -> NewStoriesFragment.newInstance()
-            1 -> TopStoriesFragment.newInstance()
+            0 -> TopStoriesFragment.newInstance()
+            1 -> NewStoriesFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
     }
