@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">camera12X</string>
+    <string name="camerax_title">CameraX</string>
+    <string name="camera2_title">Camera2</string>
+    <string name="camera1_title">Camera1</string>
+    <string name="take_picture">Take Picture</string>
+</resources>
