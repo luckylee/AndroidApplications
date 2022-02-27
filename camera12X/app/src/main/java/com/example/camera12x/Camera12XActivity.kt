@@ -1,5 +1,6 @@
 package com.example.camera12x
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +14,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import java.util.jar.Manifest
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Camera12XActivity : AppCompatActivity() {
 
@@ -120,6 +123,20 @@ class Camera12XActivity : AppCompatActivity() {
             return true
         }
         return folder.mkdir()
+    }
+
+    internal fun getOutputFile(extension: String) : File {
+        val sdf = SimpleDateFormat("yyyy_mm_dd_hh_mm_ss_sss", Locale.US)
+        lateinit var path: File
+        //
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        } else {
+            path = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        }
+
+        return File(path, "IMG_${sdf.format(Date())}.$extension")
+
     }
 
     override fun onRequestPermissionsResult(
